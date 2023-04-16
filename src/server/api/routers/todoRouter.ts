@@ -12,15 +12,26 @@ export const todoRouter = createTRPCRouter({
                 title: z.string(),
             }).required()
         )
-        .mutation(async ({ input }) => {
+        .mutation(async ({ input, ctx }) => {
+            console.log(input)
+
             await prisma.todo.create({
                 data: {
-                    title: input.title
+                    title: input.title,
+                    authorId: ctx.session.user.id,
                 }
             });
         }),
 
-    getTodos: protectedProcedure.query(async () => {
-        return await prisma.todo.findMany();
-    }),
+    getTodos: protectedProcedure
+        .query(async ({ ctx }) => {
+
+
+
+            return await prisma.todo.findMany({
+                where: {
+                    authorId: ctx.session.user.id,
+                }
+            });
+        }),
 });
