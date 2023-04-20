@@ -61,7 +61,6 @@ const Main: React.FC = () => {
                     title: title,
                     completed: false,
                     authorId: ""
-
                 }
             ])
 
@@ -78,6 +77,7 @@ const Main: React.FC = () => {
 
     const addTodo = () => {
         mutation.mutate({ title: newTodoTitle });
+        setNewTodoTitle("")
     }
 
 
@@ -88,6 +88,7 @@ const Main: React.FC = () => {
             <div className="flex pb-3">
                 <input
                     type="text"
+                    value={newTodoTitle}
                     onChange={handleNewTodoTitleChange}
                     className="add-todo-input"
                 />
