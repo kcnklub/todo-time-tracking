@@ -13,9 +13,7 @@ export const todoRouter = createTRPCRouter({
             }).required()
         )
         .mutation(async ({ input, ctx }) => {
-            console.log(input)
-
-            await prisma.todo.create({
+            return await prisma.todo.create({
                 data: {
                     title: input.title,
                     authorId: ctx.session.user.id,
@@ -23,15 +21,26 @@ export const todoRouter = createTRPCRouter({
             });
         }),
 
-    getTodos: protectedProcedure
-        .query(async ({ ctx }) => {
-
-
-
-            return await prisma.todo.findMany({
+    all: protectedProcedure
+        .query(({ ctx }) => {
+            return prisma.todo.findMany({
                 where: {
                     authorId: ctx.session.user.id,
                 }
             });
         }),
-});
+
+    deleteTodo: protectedProcedure
+        .input(
+            z.object({
+                id: z.string(),
+            }).required()
+        )
+        .mutation(async ({ input }) => {
+            await prisma.todo.delete({
+                where: {
+                    id: input.id,
+                }
+            });
+        }),
+}); 

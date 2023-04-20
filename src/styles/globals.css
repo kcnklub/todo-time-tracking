@@ -1,3 +1,40 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+main {
+    @apply flex min-h-screen items-center justify-center bg-[#EAE7DC]
+}
+
+.login {
+    @apply text-[#8E8D8A]
+}
+
+.header {
+    @apply fixed top-0 left-0 right-0 bg-[#E98074] flex p-5
+}
+
+.header-title {
+    @apply font-extrabold tracking-tight text-5xl text-white
+}
+
+.header-button {
+    @apply flex rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20 content-center
+}
+
+.add-todo-input {
+    @apply flex-grow rounded text-[#8E8D8A] focus:ring-2 focus:ring-[#E85A4F] focus:outline-none
+}
+
+.add-todo-button {
+    @apply flex rounded-full bg-[#E98074] px-10 py-3 font-semibold text-white no-underline transition hover:bg-[#E85A4F] content-center mx-3
+}
+
+.todo {
+    @apply h-16 flex items-center pl-4 rounded bg-[#D8C3A5] my-3 
+}
+
+.todo-checkbox {
+    @apply w-4 h-4 accent-[#E85A4F] bg-[#E98074] border-[#E98074] focus:ring-[#E85A4F]
+}
+
