@@ -80,13 +80,13 @@ const Main: React.FC = () => {
             </div>
             <div>
                 {remainingTodos?.map((todo: Todo) => {
-                    return <TodoElement task={todo} key={todo.id} />
+                    return <TodoElement todo={todo} key={todo.id} />
                 })}
             </div>
             <div>
                 {completedTodosExist || <h3>Completed</h3>}
                 {completedTodos?.map((todo: Todo) => {
-                    return <TodoElement task={todo} key={todo.id} />
+                    return <TodoElement todo={todo} key={todo.id} />
                 })}
             </div>
         </div>
@@ -94,36 +94,44 @@ const Main: React.FC = () => {
 }
 
 
-const TodoElement = (props: { task: Todo }) => {
-    const onChangeHander = () => {
-        console.log("onChange ", props.task.title)
+const TodoElement = (props: { todo: Todo }) => {
+    const { todo } = props;
+    const context = api.useContext()
 
-    }
-    const deleteTodo = () => {
-        console.log("Time to delete");
-    }
+    const deleteTodo = api.todoRouter.deleteTodo.useMutation({
+        async onMutate() {
+            await context.todoRouter.all.cancel();
+            const allTodos = context.todoRouter.all.getData();
+            if (!allTodos) {
+                return
+            }
+            context.todoRouter.all.setData(
+                undefined,
+                allTodos.filter((t) => t.id != todo.id)
+            );
+        }
+    })
     return (
         <div className="todo">
             <input
-                id={`check-box-${props.task.id}`}
+                id={`check-box-${todo.id}`}
                 type="checkbox"
                 value=""
                 name="bordered-checkbox"
                 className="todo-checkbox"
-                onChange={onChangeHander}
             />
             <label
                 className="w-full py-4 ml-2 text-sm font-medium">
-                {props.task.title}
+                {todo.title}
             </label>
             <div className="flex-grow"></div>
             <button
                 className="text-[#E85A4F] rounded-full w-12 h-12 px-6 py-2 flex justify-center align-center"
-                onClick={deleteTodo}
+                onClick={() => deleteTodo.mutate({ id: todo.id })}
             >
                 ...
             </button>
-        </div>
+        </div >
     )
 }
 
