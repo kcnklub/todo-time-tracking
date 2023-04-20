@@ -46,8 +46,28 @@ const Login: React.FC = () => {
 
 const Main: React.FC = () => {
     const [newTodoTitle, setNewTodoTitle] = useState<string>("");
-    const allTodos = api.todoRouter.all.useQuery();
-    const mutation = api.todoRouter.addTodo.useMutation();
+    const allTodos = api.todoRouter.all.useQuery(undefined, { staleTime: 3000 });
+    const context = api.useContext()
+    const mutation = api.todoRouter.addTodo.useMutation({
+        async onMutate({ title }) {
+            await context.todoRouter.all.cancel();
+            const todos = allTodos.data ?? [];
+            context.todoRouter.all.setData(undefined, [
+                ...todos,
+                {
+                    id: `${Math.random()}`,
+                    createdAt: new Date(),
+                    updatedAt: new Date(),
+                    title: title,
+                    completed: false,
+                    authorId: ""
+
+                }
+            ])
+
+
+        }
+    });
 
     const completedTodos: Todo[] | undefined = allTodos.data?.filter(todo => todo.completed);
     const remainingTodos: Todo[] | undefined = allTodos.data?.filter(todo => !todo.completed);
