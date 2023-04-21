@@ -63,8 +63,6 @@ const Main: React.FC = () => {
                     authorId: ""
                 }
             ])
-
-
         }
     });
 
@@ -81,7 +79,6 @@ const Main: React.FC = () => {
     }
 
 
-    const completedTodosExist = completedTodos !== undefined
 
     return (
         <div className="container gap-12 text-3xl font-extrabold">
@@ -104,8 +101,8 @@ const Main: React.FC = () => {
                     return <TodoElement todo={todo} key={todo.id} />
                 })}
             </div>
+            <br />
             <div>
-                {completedTodosExist || <h3>Completed</h3>}
                 {completedTodos?.map((todo: Todo) => {
                     return <TodoElement todo={todo} key={todo.id} />
                 })}
@@ -132,14 +129,29 @@ const TodoElement = (props: { todo: Todo }) => {
             );
         }
     })
+
+    const edit = api.todoRouter.editTodo.useMutation({
+        async onMutate({ id, data }) {
+            await context.todoRouter.all.cancel();
+            const allTodos = context.todoRouter.all.getData();
+            if (!allTodos) {
+                return
+            }
+            context.todoRouter.all.setData(
+                undefined,
+                allTodos.map((t) => t.id === id ? { ...t, ...data, } : t)
+            )
+        }
+    })
     return (
         <div className="todo">
             <input
                 id={`check-box-${todo.id}`}
                 type="checkbox"
-                value=""
+                checked={todo.completed}
                 name="bordered-checkbox"
                 className="todo-checkbox"
+                onChange={(e) => edit.mutate({ id: todo.id, data: { completed: e.currentTarget.checked } })}
             />
             <label
                 className="w-full py-4 ml-2 text-sm font-medium">

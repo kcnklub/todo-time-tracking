@@ -43,4 +43,22 @@ export const todoRouter = createTRPCRouter({
                 }
             });
         }),
+
+    editTodo: protectedProcedure
+        .input(
+            z.object({
+                id: z.string(),
+                data: z.object({
+                    completed: z.boolean().optional(),
+                    title: z.string().optional()
+                })
+            })
+        )
+        .mutation(({ input }) => {
+            const { id, data } = input;
+            return prisma.todo.update({
+                where: { id },
+                data,
+            })
+        })
 }); 
