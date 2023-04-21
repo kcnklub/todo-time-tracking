@@ -60,6 +60,7 @@ model User {
     accounts      Account[]
     sessions      Session[]
     todo          Todo[]
+    List          List[]
 }
 
 model VerificationToken {
@@ -78,4 +79,16 @@ model Todo {
     completed Boolean  @default(false)
     author    User     @relation(fields: [authorId], references: [id])
     authorId  String
+    List      List?    @relation(fields: [listId], references: [id])
+    listId    String?
+}
+
+model List {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+    name      String
+    creatorId String
+    creator   User     @relation(fields: [creatorId], references: [id])
+    todos     Todo[]
 }

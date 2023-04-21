@@ -60,7 +60,8 @@ const Main: React.FC = () => {
                     updatedAt: new Date(),
                     title: title,
                     completed: false,
-                    authorId: ""
+                    authorId: "",
+                    listId: ""
                 }
             ])
         }
@@ -77,8 +78,6 @@ const Main: React.FC = () => {
         mutation.mutate({ title: newTodoTitle });
         setNewTodoTitle("")
     }
-
-
 
     return (
         <div className="container gap-12 text-3xl font-extrabold">
