@@ -79,8 +79,8 @@ model Todo {
     completed Boolean  @default(false)
     author    User     @relation(fields: [authorId], references: [id])
     authorId  String
-    List      List?    @relation(fields: [listId], references: [id])
-    listId    String?
+    List      List     @relation(fields: [listId], references: [id])
+    listId    String
 }
 
 model List {

@@ -2,17 +2,10 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import { signIn, useSession } from "next-auth/react";
 
-import { api } from "~/utils/api";
-import { useState } from "react";
-import type { inferProcedureOutput } from "@trpc/server";
-import type { AppRouter } from "~/server/api/root";
 import Layout from "~/components/Layout";
-
-type Todo = inferProcedureOutput<AppRouter["todoRouter"]["all"]>[number];
 
 const Home: NextPage = () => {
     const { data: sessionData } = useSession();
-
     return (
         <>
             <Head>
@@ -21,19 +14,11 @@ const Home: NextPage = () => {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main>
-                {sessionData && <TestLayout /> || <Login />}
+                {sessionData && <Layout /> || <Login />}
             </main>
         </>
     );
 };
-
-const TestLayout: React.FC = () => {
-    return (
-        <Layout>
-            <Main></Main>
-        </Layout>
-    )
-}
 
 const Login: React.FC = () => {
     return (
@@ -50,129 +35,6 @@ const Login: React.FC = () => {
                 </button>
             </div>
         </div>
-    )
-}
-
-const Main: React.FC = () => {
-    const [newTodoTitle, setNewTodoTitle] = useState<string>("");
-    const allTodos = api.todoRouter.all.useQuery(undefined, { staleTime: 3000 });
-    const context = api.useContext()
-    const mutation = api.todoRouter.addTodo.useMutation({
-        async onMutate({ title }) {
-            await context.todoRouter.all.cancel();
-            const todos = allTodos.data ?? [];
-            context.todoRouter.all.setData(undefined, [
-                ...todos,
-                {
-                    id: `${Math.random()}`,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    title: title,
-                    completed: false,
-                    authorId: "",
-                    listId: ""
-                }
-            ])
-        }
-    });
-
-    const completedTodos: Todo[] | undefined = allTodos.data?.filter(todo => todo.completed);
-    const remainingTodos: Todo[] | undefined = allTodos.data?.filter(todo => !todo.completed);
-
-    const handleNewTodoTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setNewTodoTitle(e.target.value);
-    }
-
-    const addTodo = () => {
-        mutation.mutate({ title: newTodoTitle });
-        setNewTodoTitle("")
-    }
-
-    return (
-        <div className="container gap-12 text-3xl font-extrabold bg-[#FCE181] p-12 border-2 border-black rounded">
-            <div className="flex pb-3">
-                <input
-                    type="text"
-                    value={newTodoTitle}
-                    onChange={handleNewTodoTitleChange}
-                    className="add-todo-input"
-                />
-                <button
-                    className="add-todo-button"
-                    onClick={addTodo}
-                >
-                    Add Todo
-                </button>
-            </div>
-            <div>
-                {remainingTodos?.map((todo: Todo) => {
-                    return <TodoElement todo={todo} key={todo.id} />
-                })}
-            </div>
-            <br />
-            <div>
-                {completedTodos?.map((todo: Todo) => {
-                    return <TodoElement todo={todo} key={todo.id} />
-                })}
-            </div>
-        </div>
-    )
-}
-
-
-const TodoElement = (props: { todo: Todo }) => {
-    const { todo } = props;
-    const context = api.useContext()
-
-    const deleteTodo = api.todoRouter.deleteTodo.useMutation({
-        async onMutate() {
-            await context.todoRouter.all.cancel();
-            const allTodos = context.todoRouter.all.getData();
-            if (!allTodos) {
-                return
-            }
-            context.todoRouter.all.setData(
-                undefined,
-                allTodos.filter((t) => t.id != todo.id)
-            );
-        }
-    })
-
-    const edit = api.todoRouter.editTodo.useMutation({
-        async onMutate({ id, data }) {
-            await context.todoRouter.all.cancel();
-            const allTodos = context.todoRouter.all.getData();
-            if (!allTodos) {
-                return
-            }
-            context.todoRouter.all.setData(
-                undefined,
-                allTodos.map((t) => t.id === id ? { ...t, ...data, } : t)
-            )
-        }
-    })
-    return (
-        <div className="todo">
-            <input
-                id={`check-box-${todo.id}`}
-                type="checkbox"
-                checked={todo.completed}
-                name="bordered-checkbox"
-                className="todo-checkbox"
-                onChange={(e) => edit.mutate({ id: todo.id, data: { completed: e.currentTarget.checked } })}
-            />
-            <label
-                className="w-full py-4 ml-2 text-sm font-medium">
-                {todo.title}
-            </label>
-            <div className="flex-grow"></div>
-            <button
-                className="text-[#E85A4F] rounded-full w-12 h-12 px-6 py-2 flex justify-center align-center"
-                onClick={() => deleteTodo.mutate({ id: todo.id })}
-            >
-                ...
-            </button>
-        </div >
     )
 }
 

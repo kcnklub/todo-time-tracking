@@ -1,17 +1,19 @@
+import { useState } from "react"
 import Header from "./Header"
 import SideNav from "./SideNav"
+import TodoList from "./TodoList"
 
-type LayoutProps = {
-    children: React.ReactNode
-}
+const Layout: React.FC = () => {
+    const [selectedListId, setSelectedListId] = useState("");
 
-const Layout: React.FC<LayoutProps> = (props: LayoutProps) => {
     return (
         <>
             <Header />
-            <SideNav />
-            <div>
-                {props.children}
+            <div className="flex">
+                <SideNav selectedId={selectedListId} setSelectedId={setSelectedListId} />
+                <div className="container">
+                    <TodoList listId={selectedListId} />
+                </div>
             </div>
         </>
     )

@@ -2,11 +2,10 @@ import type { inferProcedureOutput } from "@trpc/server";
 import styles from "./SideNav.module.css"
 import { api } from "~/utils/api"
 import type { AppRouter } from "~/server/api/root";
-import { useState } from "react";
 
 type TodoList = inferProcedureOutput<AppRouter["listRouter"]["all"]>[number];
 
-const SideNav = () => {
+const SideNav = (props: { selectedId: string, setSelectedId: (id: string) => void }) => {
     const context = api.useContext()
     const allLists = api.listRouter.all.useQuery(undefined, { staleTime: 3000 });
     const addList = api.listRouter.addList.useMutation({
@@ -26,12 +25,9 @@ const SideNav = () => {
         }
     })
 
-    const [selectedList, setSelectedList] = useState("")
-
-
     const onListSelected = (id: string) => {
         console.log(id);
-        setSelectedList(id);
+        props.setSelectedId(id);
     }
 
     return (
@@ -46,8 +42,15 @@ const SideNav = () => {
                 </button>
             </div>
             {allLists.data?.map((l) => {
-                const isSelected = selectedList == l.id
-                return (<ListRow key={l.id} list={l} onClick={() => { onListSelected(l.id) }} selected={isSelected} />)
+                const isSelected = props.selectedId == l.id
+                return (
+                    <ListRow
+                        key={l.id}
+                        list={l}
+                        onClick={() => { onListSelected(l.id) }}
+                        selected={isSelected}
+                    />
+                )
             })}
         </div>
     )
@@ -55,7 +58,10 @@ const SideNav = () => {
 
 const ListRow = (props: { list: TodoList, onClick: () => void, selected: boolean }) => {
     return (
-        <div className={`${styles.list_row} ${props.selected ? styles.list_row_selected : ""}`} onClick={props.onClick}>
+        <div
+            className={`${styles.list_row} ${props.selected ? styles.list_row_selected : ""}`}
+            onClick={props.onClick}
+        >
             <p className="px-3">{props.list.name}</p>
             <div className="flex-grow"></div>
             <p className="px-3">...</p>

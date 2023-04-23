@@ -10,6 +10,7 @@ export const todoRouter = createTRPCRouter({
         .input(
             z.object({
                 title: z.string(),
+                listId: z.string(),
             }).required()
         )
         .mutation(async ({ input, ctx }) => {
@@ -17,14 +18,21 @@ export const todoRouter = createTRPCRouter({
                 data: {
                     title: input.title,
                     authorId: ctx.session.user.id,
+                    listId: input.listId
                 }
             });
         }),
 
     all: protectedProcedure
-        .query(({ ctx }) => {
+        .input(
+            z.object({
+                listId: z.string()
+            }).required()
+        )
+        .query(({ input, ctx }) => {
             return prisma.todo.findMany({
                 where: {
+                    listId: input.listId,
                     authorId: ctx.session.user.id,
                 }
             });
