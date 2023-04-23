@@ -3,6 +3,7 @@ import type { inferProcedureOutput } from "@trpc/server";
 import { api } from "~/utils/api";
 import { useState } from "react";
 import type { AppRouter } from "~/server/api/root";
+import styles from "./TodoList.module.css"
 
 type Todo = inferProcedureOutput<AppRouter["todoRouter"]["all"]>[number];
 
@@ -42,16 +43,16 @@ const TodoList = (props: { listId: string }) => {
     }
 
     return (
-        <div className="container gap-12 text-3xl font-extrabold">
+        <div className="border-2 border-black m-10 p-10 text-3xl font-extrabold bg-[#FCE181]">
             <div className="flex pb-3">
                 <input
                     type="text"
                     value={newTodoTitle}
                     onChange={handleNewTodoTitleChange}
-                    className="add-todo-input"
+                    className={styles.add_todo_input}
                 />
                 <button
-                    className="add-todo-button"
+                    className={styles.add_todo_button}
                     onClick={addTodo}
                 >
                     Add Todo
@@ -104,13 +105,13 @@ const TodoElement = (props: { todo: Todo }) => {
         }
     })
     return (
-        <div className="todo">
+        <div className={styles.todo}>
             <input
                 id={`check-box-${todo.id}`}
                 type="checkbox"
                 checked={todo.completed}
                 name="bordered-checkbox"
-                className="todo-checkbox"
+                className={styles.todo_checkbox}
                 onChange={(e) => edit.mutate({ id: todo.id, data: { completed: e.currentTarget.checked } })}
             />
             <label

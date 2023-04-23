@@ -1,5 +1,5 @@
 .header {
-    @apply fixed top-0 left-0 right-0 bg-[#026670] flex p-5
+    @apply bg-[#026670] flex p-5 border-b-2 border-black
 }
 
 .header_title {

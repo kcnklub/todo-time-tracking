@@ -26,7 +26,6 @@ const SideNav = (props: { selectedId: string, setSelectedId: (id: string) => voi
     })
 
     const onListSelected = (id: string) => {
-        console.log(id);
         props.setSelectedId(id);
     }
 
