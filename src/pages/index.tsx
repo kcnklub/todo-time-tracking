@@ -1,16 +1,18 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 
 import { api } from "~/utils/api";
 import { useState } from "react";
 import type { inferProcedureOutput } from "@trpc/server";
 import type { AppRouter } from "~/server/api/root";
+import Layout from "~/components/Layout";
 
 type Todo = inferProcedureOutput<AppRouter["todoRouter"]["all"]>[number];
 
 const Home: NextPage = () => {
     const { data: sessionData } = useSession();
+
     return (
         <>
             <Head>
@@ -19,12 +21,19 @@ const Home: NextPage = () => {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main>
-                {sessionData && <Header />}
-                {sessionData && <Main /> || <Login />}
+                {sessionData && <TestLayout /> || <Login />}
             </main>
         </>
     );
 };
+
+const TestLayout: React.FC = () => {
+    return (
+        <Layout>
+            <Main></Main>
+        </Layout>
+    )
+}
 
 const Login: React.FC = () => {
     return (
@@ -80,7 +89,7 @@ const Main: React.FC = () => {
     }
 
     return (
-        <div className="container gap-12 text-3xl font-extrabold">
+        <div className="container gap-12 text-3xl font-extrabold bg-[#FCE181] p-12 border-2 border-black rounded">
             <div className="flex pb-3">
                 <input
                     type="text"
@@ -167,21 +176,4 @@ const TodoElement = (props: { todo: Todo }) => {
     )
 }
 
-const Header: React.FC = () => {
-    return (
-        <div className="header">
-            <div className="header-title">Todo Time Tracker</div>
-            <div className="flex-grow" />
-            <button
-                className="header-button"
-                onClick={() => void signOut()}
-            >
-                <span>sign out</span>
-            </button>
-        </div>
-    )
-}
-
 export default Home;
-
-

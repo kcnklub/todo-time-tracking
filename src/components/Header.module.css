@@ -1,0 +1,11 @@
+.header {
+    @apply fixed top-0 left-0 right-0 bg-[#026670] flex p-5
+}
+
+.header_title {
+    @apply font-extrabold tracking-tight text-5xl text-white
+}
+
+.header_button {
+    @apply flex rounded-full bg-white/10 px-10 py-3 font-semibold text-white no-underline transition hover:bg-white/20 content-center
+}

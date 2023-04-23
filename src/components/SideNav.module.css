@@ -1,0 +1,18 @@
+.side_nav {
+    @apply fixed bg-[#FEF9C7] top-[88px] left-0 bottom-0 w-96 border-r-2 border-black
+}
+
+.add_list_button {
+    @apply flex text-4xl bg-[#9FEDD7] rounded-full w-10 h-10 border-2 border-black m-3;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.list_row {
+    @apply flex border-2 border-black text-2xl text-gray-800 m-4 rounded bg-white
+}
+
+.list_row_selected {
+    @apply bg-[#9FEDD7]
+}
