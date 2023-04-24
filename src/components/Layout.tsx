@@ -10,7 +10,7 @@ const Layout: React.FC = () => {
             <Header />
             <div className="flex w-full h-full">
                 <SideNav selectedId={selectedListId} setSelectedId={setSelectedListId} />
-                <div className="container">
+                <div className="flex-grow">
                     <TodoList listId={selectedListId} />
                 </div>
             </div>
