@@ -74,7 +74,6 @@ const TodoElement = (props: { todo: Todo }) => {
 
     const deleteTodo = api.todoRouter.deleteTodo.useMutation({
         async onMutate() {
-            console.log("deleting " + props.todo.id)
             await context.todoRouter.all.cancel();
             const allTodos = context.todoRouter.all.getData({ listId: props.todo.listId });
             if (!allTodos) {
