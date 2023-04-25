@@ -3,6 +3,7 @@ import styles from "./SideNav.module.css"
 import { api } from "~/utils/api"
 import type { AppRouter } from "~/server/api/root";
 import Popup from "reactjs-popup";
+import { useState } from "react";
 
 type TodoList = inferProcedureOutput<AppRouter["listRouter"]["all"]>[number];
 
@@ -28,9 +29,12 @@ const SideNav = (props: { selectedId: string, setSelectedId: (id: string) => voi
         props.setSelectedId(id);
     }
 
+    const [newListName, setNewListName] = useState("")
+    const onNamechanged = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setNewListName(event.target.value);
+    }
     const onAddAction = () => {
-        const response = addList.mutate({ name: "new List" })
-        console.log(response)
+        addList.mutate({ name: newListName })
     }
 
     return (
@@ -39,7 +43,11 @@ const SideNav = (props: { selectedId: string, setSelectedId: (id: string) => voi
                 <h2 className="text-4xl m-3">Lists</h2>
             </div>
             <div className="flex">
-                <input className="flex-grow my-2 mx-3 border-2 border-black rounded" type="text"></input>
+                <input
+                    className="flex-grow my-2 mx-3 border-2 border-black rounded"
+                    type="text"
+                    onChange={onNamechanged}
+                />
                 <button
                     className={styles.add_list_button}
                     onClick={onAddAction}>
