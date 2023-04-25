@@ -1,11 +1,34 @@
-import { type NextPage } from "next";
+import { type GetServerSidePropsContext, type NextPage } from "next";
 import Head from "next/head";
-import { signIn, useSession } from "next-auth/react";
 
 import Layout from "~/components/Layout";
+import { getServerSession } from "next-auth";
+import { authOptions } from "~/server/auth";
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+    console.log("This is running?")
+    const session = await getServerSession(
+        context.req, context.res, authOptions
+    );
+
+    if (!session) {
+        return {
+            redirect: {
+                destination: "/login",
+                permanent: false
+            }
+        }
+    }
+
+    return {
+        props: {
+            session: session
+        }
+    }
+
+}
 
 const Home: NextPage = () => {
-    const { data: sessionData } = useSession();
     return (
         <>
             <Head>
@@ -14,28 +37,10 @@ const Home: NextPage = () => {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main>
-                {sessionData && <Layout /> || <Login />}
+                <Layout />
             </main>
         </>
     );
 };
-
-const Login: React.FC = () => {
-    return (
-        <div>
-            <div className="login container flex flex-col items-center justify-center gap-12">
-                <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-                    Todo <span className="text-[#E98074]">Time</span> Tracker
-                </h1>
-                <button
-                    className="rounded-full bg-[#8E8D8A] px-10 py-3 font-semibold text-white no-underline transition hover:bg-[#8E8D8A]/80"
-                    onClick={() => void signIn()}
-                >
-                    Sign in
-                </button>
-            </div>
-        </div>
-    )
-}
 
 export default Home;
