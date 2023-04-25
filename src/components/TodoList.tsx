@@ -12,21 +12,16 @@ const TodoList = (props: { listId: string }) => {
     const allTodos = api.todoRouter.all.useQuery({ listId: props.listId }, { staleTime: 3000 });
     const context = api.useContext()
     const mutation = api.todoRouter.addTodo.useMutation({
-        async onMutate({ title }) {
+        async onSuccess(data) {
             await context.todoRouter.all.cancel();
             const todos = allTodos.data ?? [];
-            context.todoRouter.all.setData({ listId: props.listId }, [
-                ...todos,
-                {
-                    id: `${Math.random()}`,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    title: title,
-                    completed: false,
-                    authorId: "",
-                    listId: props.listId
-                }
-            ])
+            context.todoRouter.all.setData(
+                { listId: props.listId },
+                [
+                    ...todos,
+                    data
+                ]
+            )
         }
     });
 
@@ -79,13 +74,14 @@ const TodoElement = (props: { todo: Todo }) => {
 
     const deleteTodo = api.todoRouter.deleteTodo.useMutation({
         async onMutate() {
+            console.log("deleting " + props.todo.id)
             await context.todoRouter.all.cancel();
-            const allTodos = context.todoRouter.all.getData();
+            const allTodos = context.todoRouter.all.getData({ listId: props.todo.listId });
             if (!allTodos) {
                 return
             }
             context.todoRouter.all.setData(
-                { listId: props.todo.listId },
+                { listId: todo.listId },
                 allTodos.filter((t) => t.id != todo.id)
             );
         }

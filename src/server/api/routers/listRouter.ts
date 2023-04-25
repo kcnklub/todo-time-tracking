@@ -25,5 +25,24 @@ export const listRouter = createTRPCRouter({
                     creatorId: ctx.session.user.id,
                 }
             })
+        }),
+
+    deleteList: protectedProcedure
+        .input(
+            z.object({
+                id: z.string()
+            }).required()
+        )
+        .mutation(async ({ input }) => {
+            await prisma.todo.deleteMany({
+                where: {
+                    listId: input.id
+                }
+            })
+            return prisma.list.delete({
+                where: {
+                    id: input.id
+                }
+            })
         })
 })
