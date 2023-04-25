@@ -6,7 +6,6 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "~/server/auth";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-    console.log("This is running?")
     const session = await getServerSession(
         context.req, context.res, authOptions
     );
@@ -25,7 +24,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
             session: session
         }
     }
-
 }
 
 const Home: NextPage = () => {
