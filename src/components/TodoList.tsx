@@ -59,6 +59,12 @@ const TodoList = (props: { listId: string }) => {
                         }
                     }}
                 />
+                <button
+                    className={styles.add_todo_button}
+                    onClick={addTodo}
+                >
+                    Add Todo
+                </button>
             </div>
             <div>
                 {allTodos.data?.sort(listSortFunction).map((todo: Todo) => {

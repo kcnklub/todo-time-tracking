@@ -56,6 +56,12 @@ const SideNav = (props: { selectedId: string, setSelectedId: (id: string) => voi
                         }
                     }}
                 />
+                <button
+                    className={styles.add_list_button}
+                    onClick={onAddAction}
+                >
+                    <p>+</p>
+                </button>
             </div>
             {allLists.data?.map((l) => {
                 const isSelected = props.selectedId == l.id
