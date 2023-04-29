@@ -97,7 +97,7 @@ const ListRow = (props: { list: TodoList, onClick: (id: string) => void, selecte
 
     return (
         <div
-            className={`${styles.list_row} ${props.selected ? styles.list_row_selected : ""}`}
+            className={`${styles.list_row || ""} ${props.selected ? styles.list_row_selected || "" : ""}`}
             onClick={onSelection}
         >
             <p className="px-3">{props.list.name}</p>
