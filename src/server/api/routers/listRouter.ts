@@ -4,8 +4,25 @@ import { z } from "zod";
 
 export const listRouter = createTRPCRouter({
     all: protectedProcedure
-        .query(({ ctx }) => {
-            return prisma.list.findMany({
+        .query(async ({ ctx }) => {
+            const allLists = await prisma.list.findMany({
+                where: {
+                    creatorId: ctx.session.user.id
+                }
+            })
+            console.log(allLists)
+            if (allLists.length === 0) {
+                console.log("creating a default list for the user")
+                await prisma.list.create({
+                    data: {
+                        name: `${ctx.session.user.name || "user"}'s list`,
+                        creatorId: ctx.session.user.id
+                    }
+                })
+            } else {
+                return allLists
+            }
+            return await prisma.list.findMany({
                 where: {
                     creatorId: ctx.session.user.id
                 }
