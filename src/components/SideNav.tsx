@@ -3,7 +3,7 @@ import styles from "./SideNav.module.css"
 import { api } from "~/utils/api"
 import type { AppRouter } from "~/server/api/root";
 import Popup from "reactjs-popup";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 type TodoList = inferProcedureOutput<AppRouter["listRouter"]["all"]>[number];
 
@@ -24,9 +24,11 @@ const SideNav = (props: { selectedId: string, setSelectedId: (id: string) => voi
         }
     })
 
-    if (allLists.data) {
-        props.setSelectedId(allLists.data[0]?.id || "")
-    }
+    useEffect(() => {
+        if (allLists.data && props.selectedId === "") {
+            props.setSelectedId(allLists.data[0]?.id || "")
+        }
+    }, [props, allLists.data, props.selectedId])
 
     const onListSelected = (id: string) => {
         console.log(id);
