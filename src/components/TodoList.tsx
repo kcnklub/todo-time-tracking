@@ -25,9 +25,6 @@ const TodoList = (props: { listId: string }) => {
         }
     });
 
-    const completedTodos: Todo[] | undefined = allTodos.data?.filter(todo => todo.completed);
-    const remainingTodos: Todo[] | undefined = allTodos.data?.filter(todo => !todo.completed);
-
     const handleNewTodoTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setNewTodoTitle(e.target.value);
     }
@@ -35,6 +32,16 @@ const TodoList = (props: { listId: string }) => {
     const addTodo = () => {
         mutation.mutate({ title: newTodoTitle, listId: props.listId });
         setNewTodoTitle("")
+    }
+
+    const listSortFunction = (a: Todo, b: Todo) => {
+        if (a.completed && !b.completed) {
+            return 1
+        }
+        if (!a.completed && b.completed) {
+            return -1
+        }
+        return 0
     }
 
     return (
@@ -45,22 +52,16 @@ const TodoList = (props: { listId: string }) => {
                     value={newTodoTitle}
                     onChange={handleNewTodoTitleChange}
                     className={styles.add_todo_input}
+                    onKeyDown={(e) => {
+                        const text = e.currentTarget.value.trim()
+                        if (e.key === "Enter" && text) {
+                            addTodo()
+                        }
+                    }}
                 />
-                <button
-                    className={styles.add_todo_button}
-                    onClick={addTodo}
-                >
-                    Add Todo
-                </button>
             </div>
             <div>
-                {remainingTodos?.map((todo: Todo) => {
-                    return <TodoElement todo={todo} key={todo.id} />
-                })}
-            </div>
-            <br />
-            <div>
-                {completedTodos?.map((todo: Todo) => {
+                {allTodos.data?.sort(listSortFunction).map((todo: Todo) => {
                     return <TodoElement todo={todo} key={todo.id} />
                 })}
             </div>
@@ -89,16 +90,22 @@ const TodoElement = (props: { todo: Todo }) => {
     const edit = api.todoRouter.editTodo.useMutation({
         async onMutate({ id, data }) {
             await context.todoRouter.all.cancel();
-            const allTodos = context.todoRouter.all.getData();
+            const allTodos = context.todoRouter.all.getData({ listId: props.todo.listId });
             if (!allTodos) {
                 return
             }
             context.todoRouter.all.setData(
                 { listId: props.todo.listId },
-                allTodos.map((t) => t.id === id ? { ...t, ...data, } : t)
+                allTodos.map((t) => {
+                    if (t.id === id) {
+                        return { ...t, ...data }
+                    }
+                    return t
+                })
             )
         }
     })
+
     return (
         <div className={styles.todo}>
             <input
