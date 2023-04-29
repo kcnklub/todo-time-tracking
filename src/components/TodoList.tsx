@@ -52,13 +52,13 @@ const TodoList = (props: { listId: string }) => {
                     value={newTodoTitle}
                     onChange={handleNewTodoTitleChange}
                     className={styles.add_todo_input}
+                    onKeyDown={(e) => {
+                        const text = e.currentTarget.value.trim()
+                        if (e.key === "Enter" && text) {
+                            addTodo()
+                        }
+                    }}
                 />
-                <button
-                    className={styles.add_todo_button}
-                    onClick={addTodo}
-                >
-                    Add Todo
-                </button>
             </div>
             <div>
                 {allTodos.data?.sort(listSortFunction).map((todo: Todo) => {

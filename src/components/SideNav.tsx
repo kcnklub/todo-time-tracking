@@ -35,6 +35,7 @@ const SideNav = (props: { selectedId: string, setSelectedId: (id: string) => voi
     }
     const onAddAction = () => {
         addList.mutate({ name: newListName })
+        setNewListName("")
     }
 
     return (
@@ -46,14 +47,15 @@ const SideNav = (props: { selectedId: string, setSelectedId: (id: string) => voi
                 <input
                     className="flex-grow my-2 mx-3 border-2 border-black rounded"
                     type="text"
+                    value={newListName}
                     onChange={onNamechanged}
+                    onKeyDown={(e) => {
+                        const text = e.currentTarget.value.trim()
+                        if (e.key === "Enter" && text) {
+                            onAddAction()
+                        }
+                    }}
                 />
-                <button
-                    className={styles.add_list_button}
-                    onClick={onAddAction}>
-                    <p className="">+</p>
-                </button>
-
             </div>
             {allLists.data?.map((l) => {
                 const isSelected = props.selectedId == l.id
