@@ -112,6 +112,9 @@ const TodoElement = (props: { todo: Todo }) => {
         }
     })
 
+    const { title: todoTitle } = props.todo
+    const [edittedTitle, setEdittedTitle] = useState(todoTitle)
+    const [toggle, setToggle] = useState(true)
     return (
         <div className={styles.todo}>
             <input
@@ -122,10 +125,44 @@ const TodoElement = (props: { todo: Todo }) => {
                 className={styles.todo_checkbox}
                 onChange={(e) => edit.mutate({ id: todo.id, data: { completed: e.currentTarget.checked } })}
             />
-            <label
-                className="w-full py-4 ml-2 text-sm font-medium">
-                {todo.title}
-            </label>
+            {
+                toggle ? (
+
+                    <label
+                        className="w-full py-4 ml-2 text-sm font-medium"
+                        onDoubleClick={() => {
+                            setToggle(false)
+                        }}
+                    >
+                        {todo.title}
+                    </label>
+                ) : (
+                    <input
+                        type="text"
+                        value={edittedTitle}
+                        className="ml-2 font-medium"
+                        onChange={(event) => {
+                            setEdittedTitle(event.currentTarget.value)
+                        }}
+                        onKeyDown={(event) => {
+                            if (event.key === "Enter" || event.key === "Escape") {
+                                if (event.key === "Enter") {
+                                    edit.mutate({
+                                        id: props.todo.id,
+                                        data: {
+                                            title: edittedTitle
+                                        }
+                                    })
+                                }
+                                setToggle(true)
+                            }
+                        }}
+                        onBlur={() => {
+                            setToggle(true)
+                        }}
+                    />
+                )
+            }
             <div className="flex-grow"></div>
             <button
                 className="text-[#E85A4F] rounded-full w-12 h-12 px-6 py-2 flex justify-center align-center"
@@ -133,7 +170,7 @@ const TodoElement = (props: { todo: Todo }) => {
             >
                 ...
             </button>
-        </div >
+        </div>
     )
 }
 
